@@ -2,6 +2,7 @@
 
 import ArrayBars from "@/components/ArrayBars";
 import ControlPanel from "@/components/ControlPanel";
+import Legend from "@/components/Legend";
 import { useSorting } from "@/hooks/useSorting";
 
 export default function Home() {
@@ -11,8 +12,9 @@ export default function Home() {
     sortedIndices,
     speed,
     setSpeed,
+    algorithm,
+    setAlgorithm,
     generateNewArray,
-    setCustomArray,
     startSorting,
     isSorting,
   } = useSorting();
@@ -28,9 +30,12 @@ export default function Home() {
         onStart={startSorting}
         speed={speed}
         setSpeed={setSpeed}
-        onCustomArray={setCustomArray}
+        algorithm={algorithm}
+        setAlgorithm={setAlgorithm}
         disabled={isSorting}
       />
+
+      <Legend />
 
       <ArrayBars
         array={array}

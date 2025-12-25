@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { generateArray } from "@/utils/generateArray";
-import { bubbleSort, SortStep } from "@/algorithms/bubbleSort";
 import { sleep } from "@/utils/sleep";
+import { algorithms, AlgorithmType } from "@/algorithms";
+import { SortStep } from "@/algorithms/bubbleSort";
 
 export function useSorting() {
   const [array, setArray] = useState<number[]>([]);
@@ -9,6 +10,9 @@ export function useSorting() {
   const [sortedIndices, setSortedIndices] = useState<number[]>([]);
   const [isSorting, setIsSorting] = useState(false);
   const [speed, setSpeed] = useState(60);
+
+  const [algorithm, setAlgorithm] =
+    useState<AlgorithmType>("bubble");
 
   useEffect(() => {
     generateNewArray();
@@ -21,31 +25,12 @@ export function useSorting() {
     setSortedIndices([]);
   };
 
-  // 🔥 NEW: Apply user custom array
-  const setCustomArray = (input: string) => {
-    if (isSorting) return;
-
-    const values = input
-      .split(",")
-      .map(v => v.trim())
-      .filter(v => v !== "")
-      .map(Number);
-
-    if (values.length === 0 || values.some(isNaN)) {
-      alert("Please enter a valid comma-separated number list");
-      return;
-    }
-
-    setArray(values);
-    setActiveIndices([]);
-    setSortedIndices([]);
-  };
-
   const startSorting = async () => {
     if (isSorting) return;
     setIsSorting(true);
 
-    const steps: SortStep[] = bubbleSort(array);
+    const steps: SortStep[] =
+      algorithms[algorithm](array);
 
     for (const step of steps) {
       if (step.type === "compare") {
@@ -74,8 +59,9 @@ export function useSorting() {
     sortedIndices,
     speed,
     setSpeed,
+    algorithm,        
+    setAlgorithm,     
     generateNewArray,
-    setCustomArray, // 🔥 exposed
     startSorting,
     isSorting,
   };

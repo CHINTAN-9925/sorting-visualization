@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { AlgorithmType } from "@/algorithms";
 
 type Props = {
   onGenerate: () => void;
   onStart: () => void;
   speed: number;
   setSpeed: (value: number) => void;
-  onCustomArray: (value: string) => void;
+  algorithm: AlgorithmType;
+  setAlgorithm: (algo: AlgorithmType) => void;
   disabled: boolean;
 };
 
@@ -14,22 +15,20 @@ export default function ControlPanel({
   onStart,
   speed,
   setSpeed,
-  onCustomArray,
+  algorithm,
+  setAlgorithm,
   disabled,
 }: Props) {
-  const [input, setInput] = useState("");
-
   return (
     <div className="flex flex-col items-center gap-4">
 
-      {/* Buttons */}
       <div className="flex gap-4">
         <button
           onClick={onGenerate}
           disabled={disabled}
           className="px-4 py-2 bg-green-600 rounded disabled:opacity-50"
         >
-          Generate Random Array
+          Generate Array
         </button>
 
         <button
@@ -41,26 +40,21 @@ export default function ControlPanel({
         </button>
       </div>
 
-      {/* 🔥 Custom Array Input */}
-      <div className="flex gap-2 w-full max-w-md">
-        <input
-          type="text"
-          placeholder="e.g. 10, 5, 30, 8"
-          value={input}
-          disabled={disabled}
-          onChange={(e) => setInput(e.target.value)}
-          className="flex-1 px-3 py-2 rounded bg-gray-800 border border-gray-600"
-        />
-        <button
-          onClick={() => onCustomArray(input)}
-          disabled={disabled}
-          className="px-4 py-2 bg-purple-600 rounded disabled:opacity-50"
-        >
-          Apply
-        </button>
-      </div>
+      <select
+        value={algorithm}
+        disabled={disabled}
+        onChange={(e) =>
+          setAlgorithm(e.target.value as AlgorithmType)
+        }
+        className="px-4 py-2 bg-gray-800 border border-gray-600 rounded"
+      >
+        <option value="bubble">Bubble Sort</option>
+        <option value="selection">Selection Sort</option>
+        <option value="insertion">Insertion Sort</option>
+        <option value="merge">Merge Sort</option>
+        <option value="quick">Quick Sort</option>
+      </select>
 
-      {/* Speed Slider */}
       <div className="flex items-center gap-3 w-64">
         <span className="text-sm">Fast</span>
         <input
@@ -70,13 +64,18 @@ export default function ControlPanel({
           step={10}
           value={speed}
           disabled={disabled}
-          onChange={(e) => setSpeed(Number(e.target.value))}
+          onChange={(e) =>
+            setSpeed(Number(e.target.value))
+          }
           className="w-full"
         />
         <span className="text-sm">Slow</span>
       </div>
 
-      <p className="text-sm text-gray-400">Speed: {speed} ms</p>
+      <p className="text-sm text-gray-400">
+        Speed: {speed} ms
+      </p>
+
     </div>
   );
 }
