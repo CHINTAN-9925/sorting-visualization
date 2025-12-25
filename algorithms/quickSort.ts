@@ -8,13 +8,21 @@ export function quickSort(arr: number[]): SortStep[] {
     const pivot = a[high];
     let i = low - 1;
 
+    steps.push({
+      type: "compare",
+      indices: [high, high],
+      values: [pivot, pivot],
+      vars: { low, high, pivot },
+      line: 2,
+    });
+
     for (let j = low; j < high; j++) {
       steps.push({
         type: "compare",
         indices: [j, high],
         values: [a[j], pivot],
         vars: { low, high, i, j, pivot },
-        line: 1,
+        line: 2,
       });
 
       if (a[j] < pivot) {
@@ -27,30 +35,40 @@ export function quickSort(arr: number[]): SortStep[] {
           indices: [i, j],
           values: [a[i], a[j]],
           vars: { i, j, pivot },
-          line: 2,
+          line: 3,
         });
       }
     }
 
     [a[i + 1], a[high]] = [a[high], a[i + 1]];
+    const pivotIndex = i + 1;
 
     steps.push({
       type: "swap",
       array: [...a],
-      indices: [i + 1, high],
-      values: [a[i + 1], a[high]],
-      vars: { pivotIndex: i + 1, pivot },
+      indices: [pivotIndex, high],
+      values: [a[pivotIndex], a[high]],
+      vars: { pivotIndex, pivot },
       line: 3,
     });
 
-    return i + 1;
+    return pivotIndex;
   }
 
-  function sort(l: number, h: number) {
-    if (l < h) {
-      const p = partition(l, h);
-      sort(l, p - 1);
-      sort(p + 1, h);
+  function sort(low: number, high: number) {
+    if (low < high) {
+      const pivotIndex = partition(low, high);
+
+      steps.push({
+        type: "compare",
+        indices: [low, high],
+        values: [a[low], a[high]],
+        vars: { low, high, pivotIndex },
+        line: 4,
+      });
+
+      sort(low, pivotIndex - 1);
+      sort(pivotIndex + 1, high);
     }
   }
 

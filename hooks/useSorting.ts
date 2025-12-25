@@ -9,6 +9,8 @@ export function useSorting() {
   const [activeIndices, setActiveIndices] = useState<number[]>([]);
   const [sortedIndices, setSortedIndices] = useState<number[]>([]);
   const [speed, setSpeed] = useState(60);
+  const speedRef = useRef(speed);
+
   const [algorithm, setAlgorithm] = useState<AlgorithmType>("bubble");
   const [currentLine, setCurrentLine] = useState<number | null>(null);
   const [currentVars, setCurrentVars] =
@@ -24,6 +26,10 @@ export function useSorting() {
   useEffect(() => {
     setArray(generateArray(20));
   }, []);
+
+  useEffect(() => {
+    speedRef.current = speed;
+  }, [speed]);
 
   const applyStep = (step: SortStep) => {
     setCurrentLine(step.line);
@@ -65,7 +71,7 @@ export function useSorting() {
     ) {
       applyStep(stepsRef.current[indexRef.current]);
       indexRef.current++;
-      await sleep(speed);
+      await sleep(speedRef.current);
     }
 
     runningRef.current = false;

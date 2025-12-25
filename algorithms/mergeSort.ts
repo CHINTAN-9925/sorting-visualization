@@ -18,7 +18,7 @@ export function mergeSort(arr: number[]): SortStep[] {
         indices: [l + i, m + 1 + j],
         values: [left[i], right[j]],
         vars: { l, m, r, i, j, k },
-        line: 2,
+        line: 5,
       });
 
       if (left[i] <= right[j]) {
@@ -34,8 +34,8 @@ export function mergeSort(arr: number[]): SortStep[] {
         array: [...a],
         indices: [k, k],
         values: [a[k], a[k]],
-        vars: { k },
-        line: 3,
+        vars: { l, m, r, k },
+        line: 5,
       });
 
       k++;
@@ -49,8 +49,8 @@ export function mergeSort(arr: number[]): SortStep[] {
         array: [...a],
         indices: [k, k],
         values: [left[i], left[i]],
-        vars: { k, i },
-        line: 3,
+        vars: { l, m, r, i, k },
+        line: 5,
       });
 
       i++;
@@ -65,8 +65,8 @@ export function mergeSort(arr: number[]): SortStep[] {
         array: [...a],
         indices: [k, k],
         values: [right[j], right[j]],
-        vars: { k, j },
-        line: 3,
+        vars: { l, m, r, j, k },
+        line: 5,
       });
 
       j++;
@@ -75,11 +75,21 @@ export function mergeSort(arr: number[]): SortStep[] {
   }
 
   function divide(l: number, r: number) {
-    if (l >= r) return;
-    const m = Math.floor((l + r) / 2);
-    divide(l, m);
-    divide(m + 1, r);
-    merge(l, m, r);
+    if (l < r) {
+      const m = Math.floor((l + r) / 2);
+
+      steps.push({
+        type: "compare",
+        indices: [l, r],
+        values: [a[l], a[r]],
+        vars: { l, m, r },
+        line: 1,
+      });
+
+      divide(l, m);
+      divide(m + 1, r);
+      merge(l, m, r);
+    }
   }
 
   divide(0, a.length - 1);
