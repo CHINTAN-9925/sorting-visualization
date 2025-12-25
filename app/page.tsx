@@ -3,6 +3,7 @@
 import ArrayBars from "@/components/ArrayBars";
 import ControlPanel from "@/components/ControlPanel";
 import Legend from "@/components/Legend";
+import Stats from "@/components/Stats";
 import { useSorting } from "@/hooks/useSorting";
 
 export default function Home() {
@@ -14,6 +15,8 @@ export default function Home() {
     setSpeed,
     algorithm,
     setAlgorithm,
+    comparisons,
+    swaps,
     generateNewArray,
     startSorting,
     isSorting,
@@ -36,6 +39,8 @@ export default function Home() {
       />
 
       <Legend />
+
+      <Stats comparisons={comparisons} swaps={swaps} />
 
       <ArrayBars
         array={array}
