@@ -16,15 +16,19 @@ export default function ArrayBars({
   };
 
   return (
-    <div className="flex items-end justify-center gap-1 h-72 mt-10">
+    <div className="flex items-end justify-center gap-1 h-80 mt-10">
       {array.map((value, index) => (
         <div
           key={index}
-          className={`${getBarColor(
+          className={`relative flex items-end justify-center ${getBarColor(
             index
-          )} w-3 rounded-t-md transition-all duration-200 shadow-md`}
-          style={{ height: `${value}px` }}
-        />
+          )} w-8 rounded-t-md transition-all duration-200 shadow-md`}
+          style={{ height: `${value * 3}px` }}
+        >
+          <span className="absolute bottom-1 text-xs font-bold text-black select-none">
+            {value}
+          </span>
+        </div>
       ))}
     </div>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { generateArray } from "@/utils/generateArray";
 import { sleep } from "@/utils/sleep";
 import { algorithms, AlgorithmType } from "@/algorithms";
@@ -8,58 +8,88 @@ export function useSorting() {
   const [array, setArray] = useState<number[]>([]);
   const [activeIndices, setActiveIndices] = useState<number[]>([]);
   const [sortedIndices, setSortedIndices] = useState<number[]>([]);
-  const [isSorting, setIsSorting] = useState(false);
   const [speed, setSpeed] = useState(60);
+  const [algorithm, setAlgorithm] = useState<AlgorithmType>("bubble");
+  const [currentLine, setCurrentLine] = useState<number | null>(null);
 
-  const [algorithm, setAlgorithm] =
-    useState<AlgorithmType>("bubble");
+  const [steps, setSteps] = useState<SortStep[]>([]);
+  const [stepIndex, setStepIndex] = useState(0);
 
-  const [comparisons, setComparisons] = useState(0);
-  const [swaps, setSwaps] = useState(0);
+  const stepsRef = useRef<SortStep[]>([]);
+  const indexRef = useRef(0);
+  const pausedRef = useRef(false);
+  const runningRef = useRef(false);
 
   useEffect(() => {
-    generateNewArray();
+    setArray(generateArray(30));
   }, []);
 
-  const generateNewArray = () => {
-    if (isSorting) return;
-    setArray(generateArray(30));
-    setActiveIndices([]);
-    setSortedIndices([]);
-    setComparisons(0);
-    setSwaps(0);
+  const applyStep = (step: SortStep) => {
+    setCurrentLine(step.line);
+
+    if (step.type === "compare") {
+      setActiveIndices(step.indices);
+    }
+
+    if (step.type === "swap") {
+      setArray(step.array);
+      setActiveIndices(step.indices);
+    }
+
+    if (step.type === "done") {
+      setSortedIndices(p => [...p, step.index]);
+    }
   };
 
-  const startSorting = async () => {
-    if (isSorting) return;
-    setIsSorting(true);
-    setComparisons(0);
-    setSwaps(0);
+  const initStepsIfNeeded = () => {
+    if (stepsRef.current.length === 0) {
+      const generated = algorithms[algorithm](array);
+      stepsRef.current = generated;
+      setSteps(generated);
+      indexRef.current = 0;
+      setStepIndex(0);
+      setSortedIndices([]);
+    }
+  };
 
-    const steps: SortStep[] =
-      algorithms[algorithm](array);
+  const runLoop = async () => {
+    if (runningRef.current) return;
+    runningRef.current = true;
+    pausedRef.current = false;
 
-    for (const step of steps) {
-      if (step.type === "compare") {
-        setActiveIndices(step.indices);
-        setComparisons((c) => c + 1);
-      }
-
-      if (step.type === "swap") {
-        setArray(step.array);
-        setActiveIndices(step.indices);
-        setSwaps((s) => s + 1);
-      }
-
-      if (step.type === "done") {
-        setSortedIndices((prev) => [...prev, step.index]);
-      }
-
+    while (
+      indexRef.current < stepsRef.current.length &&
+      !pausedRef.current
+    ) {
+      const step = stepsRef.current[indexRef.current];
+      applyStep(step);
+      indexRef.current += 1;
+      setStepIndex(indexRef.current);
       await sleep(speed);
     }
 
-    setActiveIndices([]);
-    setIsSorting(false);
+    runningRef.current = false;
+  };
+
+  const sortAll = () => {
+    initStepsIfNeeded();
+    runLoop();
+  };
+
+  const pause = () => {
+    pausedRef.current = true;
+  };
+
+  const nextStep = () => {
+    initStepsIfNeeded();
+
+    if (indexRef.current >= stepsRef.current.length) return;
+
+    pausedRef.current = true;
+    const step = stepsRef.current[indexRef.current];
+    applyStep(step);
+    indexRef.current += 1;
+    setStepIndex(indexRef.current);
   };
 
   return {
@@ -70,10 +100,9 @@ export function useSorting() {
     setSpeed,
     algorithm,
     setAlgorithm,
-    comparisons,
-    swaps,
-    generateNewArray,
-    startSorting,
-    isSorting,
+    currentLine,
+    sortAll,
+    pause,
+    nextStep,
   };
 }

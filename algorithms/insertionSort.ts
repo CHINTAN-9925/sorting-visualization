@@ -9,7 +9,7 @@ export function insertionSort(arr: number[]): SortStep[] {
     let j = i - 1;
 
     while (j >= 0) {
-      steps.push({ type: "compare", indices: [j, j + 1] });
+      steps.push({ type: "compare", indices: [j, j + 1], line: 3 });
 
       if (a[j] > key) {
         a[j + 1] = a[j];
@@ -17,11 +17,10 @@ export function insertionSort(arr: number[]): SortStep[] {
           type: "swap",
           array: [...a],
           indices: [j, j + 1],
+          line: 4,
         });
         j--;
-      } else {
-        break;
-      }
+      } else break;
     }
 
     a[j + 1] = key;
@@ -29,9 +28,10 @@ export function insertionSort(arr: number[]): SortStep[] {
       type: "swap",
       array: [...a],
       indices: [j + 1, j + 1],
+      line: 5,
     });
 
-    steps.push({ type: "done", index: i });
+    steps.push({ type: "done", index: i, line: 0 });
   }
 
   return steps;
