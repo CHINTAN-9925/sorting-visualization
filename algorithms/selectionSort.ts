@@ -8,22 +8,37 @@ export function selectionSort(arr: number[]): SortStep[] {
     let min = i;
 
     for (let j = i + 1; j < a.length; j++) {
-      steps.push({ type: "compare", indices: [min, j], line: 2 });
+      steps.push({
+        type: "compare",
+        indices: [min, j],
+        values: [a[min], a[j]],
+        vars: { i, j, min },
+        line: 2,
+      });
 
-      if (a[j] < a[min]) min = j;
+      if (a[j] < a[min]) {
+        min = j;
+      }
     }
 
     if (min !== i) {
       [a[i], a[min]] = [a[min], a[i]];
+
       steps.push({
         type: "swap",
         array: [...a],
         indices: [i, min],
+        values: [a[i], a[min]],
+        vars: { i, min },
         line: 4,
       });
     }
 
-    steps.push({ type: "done", index: i, line: 0 });
+    steps.push({
+      type: "done",
+      index: i,
+      line: 0,
+    });
   }
 
   return steps;

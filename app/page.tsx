@@ -16,17 +16,18 @@ export default function Home() {
     setSpeed,
     algorithm,
     setAlgorithm,
-    comparisons,
-    swaps,
     currentLine,
+    currentVars,
+    currentValues,
     sortAll,
     pause,
     nextStep,
+    resetArray,
   } = useSorting();
 
   return (
-    <main className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold text-center mb-6">
+    <main className="p-6 max-w-6xl mx-auto space-y-6">
+      <h1 className="text-3xl font-bold text-center">
         Sorting Algorithm Visualizer
       </h1>
 
@@ -34,6 +35,7 @@ export default function Home() {
         onSortAll={sortAll}
         onPause={pause}
         onNext={nextStep}
+        onReset={resetArray}
         speed={speed}
         setSpeed={setSpeed}
         algorithm={algorithm}
@@ -51,6 +53,8 @@ export default function Home() {
         <CodePanel
           code={codeSnippets[algorithm]}
           currentLine={currentLine}
+          vars={currentVars}
+          values={currentValues}
         />
       </div>
     </main>

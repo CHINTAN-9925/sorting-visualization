@@ -4,16 +4,18 @@ type Props = {
   onSortAll: () => void;
   onPause: () => void;
   onNext: () => void;
+  onReset: () => void;
   speed: number;
-  setSpeed: (value: number) => void;
+  setSpeed: (v: number) => void;
   algorithm: AlgorithmType;
-  setAlgorithm: (algo: AlgorithmType) => void;
+  setAlgorithm: (a: AlgorithmType) => void;
 };
 
 export default function ControlPanel({
   onSortAll,
   onPause,
   onNext,
+  onReset,
   speed,
   setSpeed,
   algorithm,
@@ -21,35 +23,24 @@ export default function ControlPanel({
 }: Props) {
   return (
     <div className="flex flex-col items-center gap-4">
-
-      <div className="flex gap-4">
-        <button
-          onClick={onSortAll}
-          className="px-4 py-2 bg-green-600 rounded"
-        >
+      <div className="flex flex-wrap gap-4 justify-center">
+        <button onClick={onSortAll} className="px-4 py-2 bg-green-600 rounded">
           Sort All
         </button>
-
-        <button
-          onClick={onPause}
-          className="px-4 py-2 bg-yellow-600 rounded"
-        >
+        <button onClick={onPause} className="px-4 py-2 bg-yellow-600 rounded">
           Pause
         </button>
-
-        <button
-          onClick={onNext}
-          className="px-4 py-2 bg-purple-600 rounded"
-        >
+        <button onClick={onNext} className="px-4 py-2 bg-purple-600 rounded">
           Next Step
+        </button>
+        <button onClick={onReset} className="px-4 py-2 bg-red-600 rounded">
+          Reset Array
         </button>
       </div>
 
       <select
         value={algorithm}
-        onChange={e =>
-          setAlgorithm(e.target.value as AlgorithmType)
-        }
+        onChange={e => setAlgorithm(e.target.value as AlgorithmType)}
         className="px-4 py-2 bg-gray-800 border rounded"
       >
         <option value="bubble">Bubble</option>
@@ -60,7 +51,7 @@ export default function ControlPanel({
       </select>
 
       <div className="flex items-center gap-3 w-64">
-        <span className="text-sm">Fast</span>
+        <span>Fast</span>
         <input
           type="range"
           min={10}
@@ -68,9 +59,8 @@ export default function ControlPanel({
           step={10}
           value={speed}
           onChange={e => setSpeed(Number(e.target.value))}
-          className="w-full"
         />
-        <span className="text-sm">Slow</span>
+        <span>Slow</span>
       </div>
     </div>
   );

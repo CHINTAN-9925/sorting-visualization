@@ -4,7 +4,7 @@ export const codeSnippets: Record<AlgorithmType, string[]> = {
   bubble: [
     "for i = 0 to n-1",
     "  if arr[j] > arr[j+1]",
-    "  swap arr[j], arr[j+1]",
+    "    swap arr[j], arr[j+1]",
   ],
   selection: [
     "for i = 0 to n-1",
@@ -16,9 +16,8 @@ export const codeSnippets: Record<AlgorithmType, string[]> = {
   insertion: [
     "for i = 1 to n-1",
     "key = arr[i]",
-    "while j >= 0",
-    "if arr[j] > key",
-    "shift right",
+    "while arr[j] > key",
+    "shift arr[j]",
     "insert key",
   ],
   merge: [
@@ -28,7 +27,7 @@ export const codeSnippets: Record<AlgorithmType, string[]> = {
   ],
   quick: [
     "choose pivot",
-    "partition",
+    "partition array",
     "swap",
   ],
 };

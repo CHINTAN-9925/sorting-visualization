@@ -11,9 +11,10 @@ export function useSorting() {
   const [speed, setSpeed] = useState(60);
   const [algorithm, setAlgorithm] = useState<AlgorithmType>("bubble");
   const [currentLine, setCurrentLine] = useState<number | null>(null);
-
-  const [steps, setSteps] = useState<SortStep[]>([]);
-  const [stepIndex, setStepIndex] = useState(0);
+  const [currentVars, setCurrentVars] =
+    useState<Record<string, number> | null>(null);
+  const [currentValues, setCurrentValues] =
+    useState<[number, number] | null>(null);
 
   const stepsRef = useRef<SortStep[]>([]);
   const indexRef = useRef(0);
@@ -21,11 +22,13 @@ export function useSorting() {
   const runningRef = useRef(false);
 
   useEffect(() => {
-    setArray(generateArray(30));
+    setArray(generateArray(20));
   }, []);
 
   const applyStep = (step: SortStep) => {
     setCurrentLine(step.line);
+    setCurrentVars(step.vars ?? null);
+    setCurrentValues(step.values ?? null);
 
     if (step.type === "compare") {
       setActiveIndices(step.indices);
@@ -41,39 +44,31 @@ export function useSorting() {
     }
   };
 
-  const initStepsIfNeeded = () => {
+  const ensureSteps = () => {
     if (stepsRef.current.length === 0) {
-      const generated = algorithms[algorithm](array);
-      stepsRef.current = generated;
-      setSteps(generated);
+      stepsRef.current = algorithms[algorithm](array);
       indexRef.current = 0;
-      setStepIndex(0);
       setSortedIndices([]);
     }
   };
 
-  const runLoop = async () => {
+  const sortAll = async () => {
     if (runningRef.current) return;
-    runningRef.current = true;
+
+    ensureSteps();
     pausedRef.current = false;
+    runningRef.current = true;
 
     while (
       indexRef.current < stepsRef.current.length &&
       !pausedRef.current
     ) {
-      const step = stepsRef.current[indexRef.current];
-      applyStep(step);
-      indexRef.current += 1;
-      setStepIndex(indexRef.current);
+      applyStep(stepsRef.current[indexRef.current]);
+      indexRef.current++;
       await sleep(speed);
     }
 
     runningRef.current = false;
-  };
-
-  const sortAll = () => {
-    initStepsIfNeeded();
-    runLoop();
   };
 
   const pause = () => {
@@ -81,15 +76,27 @@ export function useSorting() {
   };
 
   const nextStep = () => {
-    initStepsIfNeeded();
+    ensureSteps();
+    pausedRef.current = true;
 
     if (indexRef.current >= stepsRef.current.length) return;
 
+    applyStep(stepsRef.current[indexRef.current]);
+    indexRef.current++;
+  };
+
+  const resetArray = () => {
     pausedRef.current = true;
-    const step = stepsRef.current[indexRef.current];
-    applyStep(step);
-    indexRef.current += 1;
-    setStepIndex(indexRef.current);
+    runningRef.current = false;
+    stepsRef.current = [];
+    indexRef.current = 0;
+
+    setArray(generateArray(20));
+    setActiveIndices([]);
+    setSortedIndices([]);
+    setCurrentLine(null);
+    setCurrentVars(null);
+    setCurrentValues(null);
   };
 
   return {
@@ -101,8 +108,11 @@ export function useSorting() {
     algorithm,
     setAlgorithm,
     currentLine,
+    currentVars,
+    currentValues,
     sortAll,
     pause,
     nextStep,
+    resetArray,
   };
 }
