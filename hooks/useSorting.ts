@@ -33,8 +33,18 @@ export function useSorting() {
 
   const applyStep = (step: SortStep) => {
     setCurrentLine(step.line);
-    setCurrentVars(step.vars ?? null);
-    setCurrentValues(step.values ?? null);
+
+    if ("vars" in step) {
+      setCurrentVars(step.vars);
+    } else {
+      setCurrentVars(null);
+    }
+
+    if ("values" in step) {
+      setCurrentValues(step.values);
+    } else {
+      setCurrentValues(null);
+    }
 
     if (step.type === "compare") {
       setActiveIndices(step.indices);
@@ -55,6 +65,10 @@ export function useSorting() {
       stepsRef.current = algorithms[algorithm](array);
       indexRef.current = 0;
       setSortedIndices([]);
+      setActiveIndices([]);
+      setCurrentLine(null);
+      setCurrentVars(null);
+      setCurrentValues(null);
     }
   };
 
